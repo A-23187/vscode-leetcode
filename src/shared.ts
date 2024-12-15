@@ -28,6 +28,7 @@ export const languages: string[] = [
     "java",
     "javascript",
     "kotlin",
+    "moonbit",
     "mysql",
     "php",
     "python",
@@ -48,6 +49,7 @@ export const langExt: Map<string, string> = new Map([
     ["java", "java"],
     ["javascript", "js"],
     ["kotlin", "kt"],
+    ["moonbit", "mbt"],
     ["mysql", "sql"],
     ["php", "php"],
     ["python", "py"],
@@ -133,7 +135,7 @@ export const urls = {
     graphql: "https://leetcode.com/graphql",
     userGraphql: "https://leetcode.com/graphql",
     login: "https://leetcode.com/accounts/login/",
-    authLoginUrl: `https://leetcode.com/authorize-login/${protocol}/?path=leetcode.vscode-leetcode`,
+    authLoginUrl: `https://leetcode.com/authorize-login/${protocol}/?path=A-23187.vscode-leetcode`,
 };
 
 export const urlsCn = {
@@ -142,7 +144,7 @@ export const urlsCn = {
     graphql: "https://leetcode.cn/graphql",
     userGraphql: "https://leetcode.cn/graphql/",
     login: "https://leetcode.cn/accounts/login/",
-    authLoginUrl: `https://leetcode.cn/authorize-login/${protocol}/?path=leetcode.vscode-leetcode`,
+    authLoginUrl: `https://leetcode.cn/authorize-login/${protocol}/?path=A-23187.vscode-leetcode`,
 };
 
 export const getUrl = (key: string) => {

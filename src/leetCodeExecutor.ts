@@ -13,6 +13,7 @@ import { executeCommand, executeCommandWithProgress } from "./utils/cpUtils";
 import { DialogOptions, openUrl } from "./utils/uiUtils";
 import * as wsl from "./utils/wslUtils";
 import { toWslPath, useWsl } from "./utils/wslUtils";
+import { genMoonbitCodeTemplateAndWrite, isMoonbitFile, moonbitBuild } from "./utils/moonbitUtils";
 
 class LeetCodeExecutor implements Disposable {
     private leetCodeRootPath: string;
@@ -102,7 +103,7 @@ class LeetCodeExecutor implements Disposable {
 
     public async showProblem(problemNode: IProblem, language: string, filePath: string, showDescriptionInComment: boolean = false, needTranslation: boolean): Promise<void> {
         const templateType: string = showDescriptionInComment ? "-cx" : "-c";
-        const cmd: string[] = [await this.getLeetCodeBinaryPath(), "show", problemNode.id, templateType, "-l", language];
+        const cmd: string[] = [await this.getLeetCodeBinaryPath(), "show", problemNode.id, templateType, "-l", language === "moonbit" ? "javascript" : language];
 
         if (!needTranslation) {
             cmd.push("-T"); // use -T to force English version
@@ -111,6 +112,9 @@ class LeetCodeExecutor implements Disposable {
         if (!await fse.pathExists(filePath)) {
             await fse.createFile(filePath);
             const codeTemplate: string = await this.executeCommandWithProgressEx("Fetching problem data...", this.nodeExecutable, cmd);
+            if (isMoonbitFile(filePath, language)) {
+                return await genMoonbitCodeTemplateAndWrite(codeTemplate, filePath);
+            }
             await fse.writeFile(filePath, codeTemplate);
         }
     }
@@ -163,6 +167,9 @@ class LeetCodeExecutor implements Disposable {
     }
 
     public async submitSolution(filePath: string): Promise<string> {
+        if (isMoonbitFile(filePath, null)) {
+            filePath = await moonbitBuild(filePath);
+        }
         try {
             return await this.executeCommandWithProgressEx("Submitting to LeetCode...", this.nodeExecutable, [await this.getLeetCodeBinaryPath(), "submit", `"${filePath}"`]);
         } catch (error) {
@@ -174,6 +181,9 @@ class LeetCodeExecutor implements Disposable {
     }
 
     public async testSolution(filePath: string, testString?: string): Promise<string> {
+        if (isMoonbitFile(filePath, null)) {
+            filePath = await moonbitBuild(filePath);
+        }
         if (testString) {
             return await this.executeCommandWithProgressEx("Submitting to LeetCode...", this.nodeExecutable, [await this.getLeetCodeBinaryPath(), "test", `"${filePath}"`, "-t", `${testString}`]);
         }
